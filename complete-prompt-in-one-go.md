@@ -1,6 +1,6 @@
 # Placement Experiment: Antigravity Prompt v3
 ​
-Build a Python project that runs a controlled experiment measuring how instruction placement across different **prompt slots** (system message, user message, tool description) affects agent behavior in agentic LLM loops.
+Build a Python project that runs a controlled experiment measuring how instruction placement across different **prompt slots** (system message, user message [the main task prompt], tool description) affects agent behavior in agentic LLM loops.
 ​
 The project supports two LLM providers: **Ollama** (local, primary) and **Anthropic Claude** (cloud, validation). The provider is selected via environment variable.
 ​
@@ -116,7 +116,9 @@ TOOLS = [
 ]
 ```
 ​
-Placement functions modify `ToolDef.description` (via deep copy). The `llm_client.py` converts `list[ToolDef]` to the provider-specific format before making API calls:
+**Important Note on Tool Modification:** When a placement function needs to append the `[DONE]` instruction to a tool's description (for the `tool_description` variant), it must first make a **deep copy** of the tool definition (`copy.deepcopy()`). Never mutate the shared base `TOOLS` list directly, otherwise the instruction will permanently pollute the tools for the other experiment variants!
+
+The `llm_client.py` converts `list[ToolDef]` to the provider-specific format before making API calls:
 ​
 **Ollama conversion** (in llm_client.py):
 ```python
@@ -496,6 +498,8 @@ ANTHROPIC_MODEL=claude-sonnet-4-6
   - Results are model- and task-specific.
   - This experiment measures **slot effects**, not text-position effects. Each slot (system message, user message, tool description) has its own mechanics built into how the model was trained.
   - Direction of effects is more transferable than magnitude. Open-weight models typically show larger placement sensitivity than frontier models.
+  - **Task Accuracy:** Note that the agent's accuracy at counting the TODO markers is not measured - that is not our **aim**. The counting task is merely a "distractor task" to force tool use. We only measure if it remembered to append `[DONE]`.
+- **Statistics Explanation:** Briefly explain in simple terms that the charts use the "Wilson 95% Confidence Interval" to display a margin of error. This proves mathematically that any differences between prompt placements are statistically significant, not just random luck from a small sample size.
 ​
 ---
 ​
@@ -520,7 +524,7 @@ Follow these throughout all modules:
 ​
 - **Type hints** on all function signatures and return types. Use `from __future__ import annotations` at the top of every module for cleaner syntax.
 - **Docstrings** on all public functions, classes, and modules. One-line for simple functions, multi-line (Google style) for complex ones.
-- **`logging` module** for all progress output, warnings, and errors — not bare `print()`. Configure with a simple `logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")` in the entry points.
+- **`logging` module** for all progress output, warnings, and errors — not bare `print()`. Configure with a simple `logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")` in the entry points. Use lazy formatting (`logger.info("Count: %s", count)`) rather than eager f-strings to comply with standard linting rules.
 - **`pathlib.Path`** for all file system operations — not `os.path`. Use `Path.resolve()` for safe path handling.
 - **`if __name__ == "__main__"`** guard in every module that serves as an entry point (`runner.py`, `analyze.py`, `generate_data.py`).
 - **`argparse`** for CLI arguments (needed for `--smoke-test`).

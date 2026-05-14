@@ -1,0 +1,7 @@
+.env
+__pycache__/
+*.py[cod]
+.ruff_cache/
+results/
+data/sample_files/
+.venv/
