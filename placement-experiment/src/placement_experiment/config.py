@@ -4,8 +4,6 @@ Loads settings from the .env file (or environment variables) and exposes them
 as typed constants for the rest of the package.
 """
 
-from __future__ import annotations
-
 import os
 import sys
 from pathlib import Path
