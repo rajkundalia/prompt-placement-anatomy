@@ -9,15 +9,11 @@ description = "Controlled experiment measuring how instruction placement across 
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "anthropic==0.99.0",
     "ollama==0.6.2",
     "pandas>=2.0",
     "matplotlib>=3.7",
     "python-dotenv>=1.0",
-]
-
-[project.optional-dependencies]
-anthropic = [
-    "anthropic==0.99.0",
 ]
 
 [tool.hatch.build.targets.wheel]
