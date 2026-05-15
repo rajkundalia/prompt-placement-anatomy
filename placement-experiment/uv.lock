@@ -1075,16 +1075,12 @@ name = "placement-experiment"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "anthropic" },
     { name = "matplotlib" },
     { name = "ollama" },
     { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "pandas", version = "3.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "python-dotenv" },
-]
-
-[package.optional-dependencies]
-anthropic = [
-    { name = "anthropic" },
 ]
 
 [package.dev-dependencies]
@@ -1094,13 +1090,12 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "anthropic", marker = "extra == 'anthropic'", specifier = "==0.99.0" },
+    { name = "anthropic", specifier = "==0.99.0" },
     { name = "matplotlib", specifier = ">=3.7" },
     { name = "ollama", specifier = "==0.6.2" },
     { name = "pandas", specifier = ">=2.0" },
     { name = "python-dotenv", specifier = ">=1.0" },
 ]
-provides-extras = ["anthropic"]
 
 [package.metadata.requires-dev]
 dev = [{ name = "ruff", specifier = ">=0.15.13" }]
