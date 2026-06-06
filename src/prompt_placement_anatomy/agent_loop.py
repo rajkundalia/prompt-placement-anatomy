@@ -11,9 +11,9 @@ message dicts are built here.
 import logging
 from dataclasses import dataclass, field
 
-from placement_experiment import llm_client
-from placement_experiment.placements import PlacementConfig
-from placement_experiment.tools import dispatch_tool
+from prompt_placement_anatomy import llm_client
+from prompt_placement_anatomy.placements import PlacementConfig
+from prompt_placement_anatomy.tools import dispatch_tool
 
 logger = logging.getLogger(__name__)
 

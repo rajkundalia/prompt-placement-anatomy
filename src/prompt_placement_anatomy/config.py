@@ -11,7 +11,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # Load .env from the project root (two levels up from this file:
-# src/placement_experiment/config.py -> src/placement_experiment/ -> src/ -> project root)
+# src/prompt_placement_anatomy/config.py -> src/prompt_placement_anatomy/ -> src/ -> project root)
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 load_dotenv(_PROJECT_ROOT / ".env")
 

@@ -72,13 +72,13 @@ These are gaps in the prompts below. Copy the relevant notes and paste them at t
 ## Prompt 1: Project setup + Ollama client + tools + agent loop
 
 ```
-Create a Python project called `placement-experiment` with `uv` and `pyproject.toml`.
+Create a Python project called `prompt-placement-anatomy` with `uv` and `pyproject.toml`.
 
 Dependencies: ollama==0.6.2, pandas, matplotlib, python-dotenv.
 Python >= 3.10.
 
 Structure:
-  src/placement_experiment/
+  src/prompt_placement_anatomy/
     __init__.py
     config.py
     llm_client.py
@@ -95,7 +95,7 @@ Load .env with python-dotenv. Expose: OLLAMA_HOST (default http://localhost:1143
 Step 2 — generate_data.py:
 Generate 5 markdown files in data/sample_files/ (file_1.md through file_5.md). Each should be 200-400 words of plausible project notes with TODO comments. Known TODO counts: file_1=2, file_2=3, file_3=1, file_4=0, file_5=4. Idempotent — overwrites on re-run. Add a verification step that reads each file back and asserts the TODO count.
 
-Run as: python -m placement_experiment.generate_data
+Run as: python -m prompt_placement_anatomy.generate_data
 
 Step 3 — tools.py:
 Two tools only:
@@ -217,7 +217,7 @@ This must produce a successful completion with the correct TODO counts before pr
 ## Prompt 2: Placements + runner
 
 ```
-I have a working agent loop in placement-experiment/. The agent can list files, read them, and produce a final text answer using Ollama.
+I have a working agent loop in the project root. The agent can list files, read them, and produce a final text answer using Ollama.
 
 Now add placement variants and the experiment runner.
 
@@ -284,8 +284,8 @@ After first 10 runs, print ETA.
 
 Add --smoke-test flag (via argparse): if set, run 1 trial per placement (3 total) instead of 50.
 
-Run as: python -m placement_experiment.runner
-Or: python -m placement_experiment.runner --smoke-test
+Run as: python -m prompt_placement_anatomy.runner
+Or: python -m prompt_placement_anatomy.runner --smoke-test
 
 Step 3 — Verify:
 1. Run --smoke-test
@@ -336,7 +336,7 @@ Generate results/chart.png:
 - Omit prefill charts for anthropic data (values are null)
 - matplotlib defaults, clear labels and title
 
-Run as: python -m placement_experiment.analyze
+Run as: python -m prompt_placement_anatomy.analyze
 
 Step 2 — Verify:
 Run analyze on the smoke-test CSV. It should print a table (stats will be meaningless with 3 rows — that's fine) and save a chart. Open the chart and confirm it renders correctly.

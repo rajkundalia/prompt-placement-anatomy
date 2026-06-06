@@ -7,8 +7,8 @@ pipeline validation (1 run per placement).
 All scripts assume CWD is the project root.
 
 Usage:
-    python -m placement_experiment.runner
-    python -m placement_experiment.runner --smoke-test
+    python -m prompt_placement_anatomy.runner
+    python -m prompt_placement_anatomy.runner --smoke-test
 """
 
 import argparse
@@ -24,10 +24,10 @@ from typing import Any
 import httpx
 import ollama
 
-from placement_experiment import config
-from placement_experiment.agent_loop import AgentResult
-from placement_experiment.agent_loop import run as run_agent
-from placement_experiment.placements import PlacementConfig, get_all_placements
+from prompt_placement_anatomy import config
+from prompt_placement_anatomy.agent_loop import AgentResult
+from prompt_placement_anatomy.agent_loop import run as run_agent
+from prompt_placement_anatomy.placements import PlacementConfig, get_all_placements
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -291,7 +291,7 @@ def run_experiment(smoke_test: bool = False) -> None:
                 result = run_agent(placement)
             except Exception as exc:  # noqa: BLE001
                 logger.error("Unexpected error in run %s/%d: %s", placement.name, run_id, exc)
-                from placement_experiment.agent_loop import AgentResult  # avoid circular at module level
+                from prompt_placement_anatomy.agent_loop import AgentResult  # avoid circular at module level
 
                 result = AgentResult(status="error", turns=0, final_answer=str(exc))
 

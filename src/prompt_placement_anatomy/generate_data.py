@@ -13,7 +13,7 @@ This script is idempotent — running it multiple times produces the same output
 All scripts assume CWD is the project root (data/sample_files/ is relative to CWD).
 
 Usage:
-    python -m placement_experiment.generate_data
+    python -m prompt_placement_anatomy.generate_data
 """
 
 import logging
