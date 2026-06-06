@@ -40,11 +40,11 @@ Use `uv` for dependency management. Generate `pyproject.toml` with optional depe
 ## Repository Structure
 ​
 ```
-placement-experiment/
+prompt-placement-anatomy/
 ├── pyproject.toml
 ├── README.md
 ├── .env.example
-├── src/placement_experiment/
+├── src/prompt_placement_anatomy/
 │   ├── __init__.py
 │   ├── config.py               # Loads .env, exposes settings
 │   ├── llm_client.py           # Provider abstraction (Ollama + Anthropic)
@@ -61,10 +61,10 @@ placement-experiment/
 ```
 ​
 Entry points (all Python CLI, no shell scripts):
-- `python -m placement_experiment.generate_data`
-- `python -m placement_experiment.runner` (full run; resumable)
-- `python -m placement_experiment.runner --smoke-test` (1 run per placement)
-- `python -m placement_experiment.analyze`
+- `python -m prompt_placement_anatomy.generate_data`
+- `python -m prompt_placement_anatomy.runner` (full run; resumable)
+- `python -m prompt_placement_anatomy.runner --smoke-test` (1 run per placement)
+- `python -m prompt_placement_anatomy.analyze`
 ​
 ---
 ​
@@ -483,15 +483,15 @@ ANTHROPIC_MODEL=claude-sonnet-4-6
   1. Install Ollama; ensure it's running
   2. `ollama pull llama3.1:8b`
   3. `uv sync`
-  4. `python -m placement_experiment.generate_data`
-  5. `python -m placement_experiment.runner --smoke-test`
-  6. `python -m placement_experiment.runner`
-  7. `python -m placement_experiment.analyze`
+  4. `python -m prompt_placement_anatomy.generate_data`
+  5. `python -m prompt_placement_anatomy.runner --smoke-test`
+  6. `python -m prompt_placement_anatomy.runner`
+  7. `python -m prompt_placement_anatomy.analyze`
 - How to run validation on Anthropic:
   1. `uv sync --extra anthropic`
   2. Set `LLM_PROVIDER=anthropic` and `ANTHROPIC_API_KEY` in `.env`
-  3. `python -m placement_experiment.runner` (runs 60 validation trials)
-  4. `python -m placement_experiment.analyze` (now shows both providers)
+  3. `python -m prompt_placement_anatomy.runner` (runs 60 validation trials)
+  4. `python -m prompt_placement_anatomy.analyze` (now shows both providers)
 - Note: runner is resumable — safe to interrupt and re-run.
 - Note: set `OLLAMA_KEEP_ALIVE=30m` for stable prefill measurements.
 - Caveats:
@@ -508,9 +508,9 @@ ANTHROPIC_MODEL=claude-sonnet-4-6
 Before declaring the project done, verify by:
 ​
 1. `uv sync` runs cleanly.
-2. `python -m placement_experiment.generate_data` produces 5 files with correct TODO counts (verify programmatically: read each file, count "TODO" occurrences case-insensitively, assert counts are [2, 3, 1, 0, 4]).
-3. `python -m placement_experiment.runner --smoke-test` with `LLM_PROVIDER=ollama` completes 3 runs (one per placement) and writes 3 rows to CSV. Verify each row has: status filled, turns > 0, total_tokens > 0, prefill_ms_turn_1 > 0 where status == success.
-4. `python -m placement_experiment.analyze` reads the smoke-test CSV and produces both a table on stdout and a chart at `results/chart.png`. With only 3 rows the stats will be meaningless — that's fine, we're checking the pipeline.
+2. `python -m prompt_placement_anatomy.generate_data` produces 5 files with correct TODO counts (verify programmatically: read each file, count "TODO" occurrences case-insensitively, assert counts are [2, 3, 1, 0, 4]).
+3. `python -m prompt_placement_anatomy.runner --smoke-test` with `LLM_PROVIDER=ollama` completes 3 runs (one per placement) and writes 3 rows to CSV. Verify each row has: status filled, turns > 0, total_tokens > 0, prefill_ms_turn_1 > 0 where status == success.
+4. `python -m prompt_placement_anatomy.analyze` reads the smoke-test CSV and produces both a table on stdout and a chart at `results/chart.png`. With only 3 rows the stats will be meaningless — that's fine, we're checking the pipeline.
 ​
 **Do NOT run the full 150-run or 60-run experiment** — that's for the user to do on their own machine.
 ​

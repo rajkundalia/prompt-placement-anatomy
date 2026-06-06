@@ -10,8 +10,8 @@ import copy
 import logging
 from dataclasses import dataclass
 
-from placement_experiment import config
-from placement_experiment.tools import TOOLS, ToolDef
+from prompt_placement_anatomy import config
+from prompt_placement_anatomy.tools import TOOLS, ToolDef
 
 logger = logging.getLogger(__name__)
 

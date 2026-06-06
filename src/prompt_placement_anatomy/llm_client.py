@@ -19,8 +19,8 @@ import httpx
 import ollama
 from anthropic import Anthropic
 
-from placement_experiment import config
-from placement_experiment.tools import ToolDef
+from prompt_placement_anatomy import config
+from prompt_placement_anatomy.tools import ToolDef
 
 logger = logging.getLogger(__name__)
 

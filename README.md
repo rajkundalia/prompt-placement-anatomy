@@ -6,7 +6,7 @@ This project runs a controlled experiment measuring how placing the same instruc
 
 ## Quickstart — Ollama (local)
 
-> **Important:** All commands must be run from the `placement-experiment/` directory (the project root). The agent resolves `data/sample_files/` relative to your working directory.
+> **Important:** All commands must be run from the root directory of the repository. The agent resolves `data/sample_files/` relative to your working directory.
 
 ```bash
 # 1. Install Ollama and make sure it is running
@@ -20,16 +20,16 @@ ollama pull llama3.1:8b
 uv sync
 
 # 4. Generate the five sample markdown files
-python -m placement_experiment.generate_data
+python -m prompt_placement_anatomy.generate_data
 
 # 5. Smoke-test the pipeline (1 run per placement = 3 runs total)
-python -m placement_experiment.runner --smoke-test
+python -m prompt_placement_anatomy.runner --smoke-test
 
 # 6. Run the full experiment (50 runs × 3 placements = 150 runs)
-python -m placement_experiment.runner
+python -m prompt_placement_anatomy.runner
 
 # 7. Analyse results and generate the chart
-python -m placement_experiment.analyze
+python -m prompt_placement_anatomy.analyze
 ```
 
 Results are written to `results/runs.csv` and the chart to `results/chart.png`.
@@ -48,10 +48,10 @@ uv sync --extra anthropic
 #      ANTHROPIC_API_KEY=sk-ant-...
 
 # 3. Run validation trials (20 runs × 3 placements = 60 runs)
-python -m placement_experiment.runner
+python -m prompt_placement_anatomy.runner
 
 # 4. Analyse — shows both providers side by side
-python -m placement_experiment.analyze
+python -m prompt_placement_anatomy.analyze
 ```
 
 ---
@@ -75,10 +75,10 @@ OLLAMA_KEEP_ALIVE=30m
 ## Project Layout
 
 ```
-placement-experiment/
+prompt-placement-anatomy/
 ├── pyproject.toml
 ├── .env.example
-├── src/placement_experiment/
+├── src/prompt_placement_anatomy/
 │   ├── config.py          # Loads .env, exposes settings
 │   ├── llm_client.py      # Provider abstraction (Ollama + Anthropic)
 │   ├── tools.py           # Tool definitions + dispatcher

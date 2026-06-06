@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "placement-experiment"
+name = "prompt-placement-anatomy"
 version = "0.1.0"
 description = "Controlled experiment measuring how instruction placement across prompt slots affects agent behavior in agentic LLM loops."
 readme = "README.md"
@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/placement_experiment"]
+packages = ["src/prompt_placement_anatomy"]
 
 [tool.ruff]
 line-length = 120

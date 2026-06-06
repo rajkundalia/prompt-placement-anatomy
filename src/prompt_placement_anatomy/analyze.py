@@ -4,7 +4,7 @@ Reads results/runs.csv, computes statistics per (provider, placement) group,
 prints a summary table to stdout, and saves a bar chart to results/chart.png.
 
 Usage:
-    python -m placement_experiment.analyze
+    python -m prompt_placement_anatomy.analyze
 """
 
 import logging

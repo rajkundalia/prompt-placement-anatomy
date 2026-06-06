@@ -1071,7 +1071,7 @@ wheels = [
 ]
 
 [[package]]
-name = "placement-experiment"
+name = "prompt-placement-anatomy"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
