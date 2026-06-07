@@ -111,6 +111,25 @@ prompt-placement-anatomy/
 
 The compliance and completion rates in the chart include **Wilson 95% Confidence Interval** error bars.
 
-In plain terms: if you run an experiment 50 times and observe a 70% compliance rate, you cannot be certain the *true* rate (for infinite runs) is exactly 70%. The Wilson CI computes a range — say, [56%, 81%] — and says: *"We are 95% confident the true rate falls in this range."* If the confidence intervals of two placements do not overlap, the difference between them is statistically significant and not just luck from a small sample size. The wider the bar, the less data we have and the less certain we are.
+For each placement, you get a compliance rate — for example *(hypothetical numbers)*: system prompt got 76% compliance across 50 runs, user prompt got 62%. The raw percentages tell you which placement *looked* better. But the Wilson Score tells you something more useful:
 
-The Wilson interval is used (rather than the simpler normal approximation) because it remains accurate even for proportions near 0 or 1 and for smaller sample sizes.
+> *"Is the gap between 76% and 62% real — or could it just be luck from 50 runs?"* (using those example numbers)
+
+**How to read the chart:**
+
+- If the Wilson intervals of two placements **do not overlap** → the difference is real. One placement genuinely works better.
+- If they **do overlap** → you cannot confidently say one is better. You need more runs.
+
+In plain English *(example)*: *"You ran 50 trials. System prompt got 76% compliance. The true compliance rate is somewhere between X% and Y% with 95% confidence. If that range does not overlap with the user prompt's range, system prompt is genuinely better — not just luckier."*
+
+That is what actually matters. Not a ranking. Not a score. Just: **is this difference real?**
+
+The Wilson interval is used (rather than the simpler normal approximation) because it stays accurate even for proportions near 0% or 100% and for smaller sample sizes — exactly the edge cases this experiment can hit.
+
+> **Further reading:** [Why 95 reviews beats 20 reviews — even when both score 95%](https://medium.com/@rajkundalia/why-95-reviews-beats-20-reviews-even-when-both-score-95-21d21ea3cb92)
+
+---
+
+## Results
+
+*To be filled in after running the experiment.*
