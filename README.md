@@ -19,16 +19,19 @@ ollama pull qwen2.5-coder:3b
 # 3. Install Python dependencies
 uv sync
 
-# 4. Generate the five sample markdown files
+# 4. Copy the environment template and set your values
+cp .env.example .env   # on Windows: Copy-Item .env.example .env
+
+# 5. Generate the five sample markdown files
 python -m prompt_placement_anatomy.generate_data
 
-# 5. Smoke-test the pipeline (1 run per placement = 3 runs total)
+# 6. Smoke-test the pipeline (1 run per placement = 3 runs total)
 python -m prompt_placement_anatomy.runner --smoke-test
 
-# 6. Run the full experiment (50 runs × 3 placements = 150 runs)
+# 7. Run the full experiment (50 runs × 3 placements = 150 runs)
 python -m prompt_placement_anatomy.runner
 
-# 7. Analyse results and generate the chart
+# 8. Analyse results and generate the chart
 python -m prompt_placement_anatomy.analyze
 ```
 
