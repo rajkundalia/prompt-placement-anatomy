@@ -14,7 +14,7 @@ This project runs a controlled experiment measuring how placing the same instruc
 ollama serve   # if not already running as a background service
 
 # 2. Pull the default model
-ollama pull llama3.1:8b
+ollama pull qwen2.5-coder:3b
 
 # 3. Install Python dependencies
 uv sync
@@ -97,11 +97,11 @@ prompt-placement-anatomy/
 
 ## Caveats
 
-**Results are model- and task-specific.** The numbers you see apply to `llama3.1:8b` on this particular counting task. A different model, quantisation level, or task will produce different absolute values.
+**Results are model- and task-specific.** The numbers you see apply to `qwen2.5-coder:3b` on this particular counting task. A different model, quantisation level, or task will produce different absolute values.
 
 **This experiment measures slot effects, not text-position effects.** Each slot — system message, user message, tool description — has its own attention mechanics baked into how the model was trained (system tokens often receive higher attention weights, tool descriptions are processed in a specific context window position, etc.). We are measuring the effect of the *slot*, not of where in the text the instruction appears within a slot.
 
-**Direction of effects is more transferable than magnitude.** If the system slot outperforms the tool description slot on `llama3.1:8b`, that ordering likely holds across similar open-weight models — but the gap may be larger or smaller. Frontier models (GPT-4, Claude 3.5+) typically show smaller placement sensitivity than smaller open-weight models.
+**Direction of effects is more transferable than magnitude.** If the system slot outperforms the tool description slot on `qwen2.5-coder:3b`, that ordering likely holds across similar open-weight models — but the gap may be larger or smaller. Frontier models (GPT-4, Claude 3.5+) typically show smaller placement sensitivity than smaller open-weight models.
 
 **Task accuracy is not measured.** The TODO-counting task is a distractor designed to force multi-turn tool use. Whether the agent counts correctly is irrelevant — we only measure whether it appended `[DONE]`. Accuracy would require a separate ground-truth comparison.
 
