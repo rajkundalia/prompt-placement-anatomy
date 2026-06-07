@@ -14,21 +14,24 @@ This project runs a controlled experiment measuring how placing the same instruc
 ollama serve   # if not already running as a background service
 
 # 2. Pull the default model
-ollama pull llama3.1:8b
+ollama pull qwen2.5-coder:3b
 
 # 3. Install Python dependencies
 uv sync
 
-# 4. Generate the five sample markdown files
+# 4. Copy the environment template and set your values
+cp .env.example .env   # on Windows: Copy-Item .env.example .env
+
+# 5. Generate the five sample markdown files
 python -m prompt_placement_anatomy.generate_data
 
-# 5. Smoke-test the pipeline (1 run per placement = 3 runs total)
+# 6. Smoke-test the pipeline (1 run per placement = 3 runs total)
 python -m prompt_placement_anatomy.runner --smoke-test
 
-# 6. Run the full experiment (50 runs × 3 placements = 150 runs)
+# 7. Run the full experiment (50 runs × 3 placements = 150 runs)
 python -m prompt_placement_anatomy.runner
 
-# 7. Analyse results and generate the chart
+# 8. Analyse results and generate the chart
 python -m prompt_placement_anatomy.analyze
 ```
 
@@ -97,11 +100,11 @@ prompt-placement-anatomy/
 
 ## Caveats
 
-**Results are model- and task-specific.** The numbers you see apply to `llama3.1:8b` on this particular counting task. A different model, quantisation level, or task will produce different absolute values.
+**Results are model- and task-specific.** The numbers you see apply to `qwen2.5-coder:3b` on this particular counting task. A different model, quantisation level, or task will produce different absolute values.
 
 **This experiment measures slot effects, not text-position effects.** Each slot — system message, user message, tool description — has its own attention mechanics baked into how the model was trained (system tokens often receive higher attention weights, tool descriptions are processed in a specific context window position, etc.). We are measuring the effect of the *slot*, not of where in the text the instruction appears within a slot.
 
-**Direction of effects is more transferable than magnitude.** If the system slot outperforms the tool description slot on `llama3.1:8b`, that ordering likely holds across similar open-weight models — but the gap may be larger or smaller. Frontier models (GPT-4, Claude 3.5+) typically show smaller placement sensitivity than smaller open-weight models.
+**Direction of effects is more transferable than magnitude.** If the system slot outperforms the tool description slot on `qwen2.5-coder:3b`, that ordering likely holds across similar open-weight models — but the gap may be larger or smaller. Frontier models (GPT-4, Claude 3.5+) typically show smaller placement sensitivity than smaller open-weight models.
 
 **Task accuracy is not measured.** The TODO-counting task is a distractor designed to force multi-turn tool use. Whether the agent counts correctly is irrelevant — we only measure whether it appended `[DONE]`. Accuracy would require a separate ground-truth comparison.
 
@@ -111,6 +114,25 @@ prompt-placement-anatomy/
 
 The compliance and completion rates in the chart include **Wilson 95% Confidence Interval** error bars.
 
-In plain terms: if you run an experiment 50 times and observe a 70% compliance rate, you cannot be certain the *true* rate (for infinite runs) is exactly 70%. The Wilson CI computes a range — say, [56%, 81%] — and says: *"We are 95% confident the true rate falls in this range."* If the confidence intervals of two placements do not overlap, the difference between them is statistically significant and not just luck from a small sample size. The wider the bar, the less data we have and the less certain we are.
+For each placement, you get a compliance rate — for example *(hypothetical numbers)*: system prompt got 76% compliance across 50 runs, user prompt got 62%. The raw percentages tell you which placement *looked* better. But the Wilson Score tells you something more useful:
 
-The Wilson interval is used (rather than the simpler normal approximation) because it remains accurate even for proportions near 0 or 1 and for smaller sample sizes.
+> *"Is the gap between 76% and 62% real — or could it just be luck from 50 runs?"* (using those example numbers)
+
+**How to read the chart:**
+
+- If the Wilson intervals of two placements **do not overlap** → the difference is real. One placement genuinely works better.
+- If they **do overlap** → you cannot confidently say one is better. You need more runs.
+
+In plain English *(example)*: *"You ran 50 trials. System prompt got 76% compliance. The true compliance rate is somewhere between X% and Y% with 95% confidence. If that range does not overlap with the user prompt's range, system prompt is genuinely better — not just luckier."*
+
+That is what actually matters. Not a ranking. Not a score. Just: **is this difference real?**
+
+The Wilson interval is used (rather than the simpler normal approximation) because it stays accurate even for proportions near 0% or 100% and for smaller sample sizes — exactly the edge cases this experiment can hit.
+
+> **Further reading:** [Why 95 reviews beats 20 reviews — even when both score 95%](https://medium.com/@rajkundalia/why-95-reviews-beats-20-reviews-even-when-both-score-95-21d21ea3cb92)
+
+---
+
+## Results
+
+*To be filled in after running the experiment.*
