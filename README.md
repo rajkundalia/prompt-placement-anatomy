@@ -8,6 +8,8 @@ This project runs a controlled experiment measuring how placing the same instruc
 
 > **Important:** All commands must be run from the root directory of the repository. The agent resolves `data/sample_files/` relative to your working directory.
 
+> **Requires Python >= 3.10.** Earlier versions will fail on the `match` syntax and union type hints used throughout the codebase.
+
 ```bash
 # 1. Install Ollama and make sure it is running
 #    https://ollama.com/download
@@ -104,7 +106,7 @@ prompt-placement-anatomy/
 
 **This experiment measures slot effects, not text-position effects.** Each slot — system message, user message, tool description — has its own attention mechanics baked into how the model was trained (system tokens often receive higher attention weights, tool descriptions are processed in a specific context window position, etc.). We are measuring the effect of the *slot*, not of where in the text the instruction appears within a slot.
 
-**Direction of effects is more transferable than magnitude.** If the system slot outperforms the tool description slot on `qwen2.5-coder:3b`, that ordering likely holds across similar open-weight models — but the gap may be larger or smaller. Frontier models (GPT-5, Claude 4.5+) typically show smaller placement sensitivity than smaller open-weight models.
+**Direction of effects is more transferable than magnitude.** If the system slot outperforms the tool description slot on `qwen2.5-coder:3b`, that ordering likely holds across similar open-weight models — but the gap may be larger or smaller. Frontier models generally show smaller placement sensitivity than smaller open-weight models; this experiment confirmed that for `claude-haiku-4-5` and `claude-sonnet-4-6`.
 
 **Task accuracy is not measured.** The TODO-counting task is a distractor designed to force multi-turn tool use. Whether the agent counts correctly is irrelevant — we only measure whether it appended `[DONE]`. Accuracy would require a separate ground-truth comparison.
 
@@ -115,10 +117,6 @@ prompt-placement-anatomy/
 **Compliance Rate** — the fraction of successful runs where the model's final answer contained `[DONE]`. This is the primary metric of the experiment.
 
 **Completion Rate** — the fraction of runs that produced a final text response within the turn cap (15 turns). A run that loops indefinitely on tool calls counts as a timeout. In this experiment, all runs completed, so this metric is 100% across the board.
-
-
-
-
 
 ---
 
