@@ -104,7 +104,7 @@ prompt-placement-anatomy/
 
 **This experiment measures slot effects, not text-position effects.** Each slot — system message, user message, tool description — has its own attention mechanics baked into how the model was trained (system tokens often receive higher attention weights, tool descriptions are processed in a specific context window position, etc.). We are measuring the effect of the *slot*, not of where in the text the instruction appears within a slot.
 
-**Direction of effects is more transferable than magnitude.** If the system slot outperforms the tool description slot on `qwen2.5-coder:3b`, that ordering likely holds across similar open-weight models — but the gap may be larger or smaller. Frontier models (GPT-4, Claude 3.5+) typically show smaller placement sensitivity than smaller open-weight models.
+**Direction of effects is more transferable than magnitude.** If the system slot outperforms the tool description slot on `qwen2.5-coder:3b`, that ordering likely holds across similar open-weight models — but the gap may be larger or smaller. Frontier models (GPT-5, Claude 4.5+) typically show smaller placement sensitivity than smaller open-weight models.
 
 **Task accuracy is not measured.** The TODO-counting task is a distractor designed to force multi-turn tool use. Whether the agent counts correctly is irrelevant — we only measure whether it appended `[DONE]`. Accuracy would require a separate ground-truth comparison.
 
@@ -202,13 +202,7 @@ The Wilson interval is used (rather than the simpler normal approximation) becau
 
 ---
 
-## Limitations & Future Work
-
-### Hypothesis: large-context behaviour may differ
-
-This experiment used short prompts (~300 tokens for Ollama, ~6,000 tokens for Claude including tool calls). Under these conditions, frontier models showed zero placement sensitivity.
-
-**Hypothesis:** at very large context lengths (50,000+ tokens — injected codebase, long conversation history, large tool schemas), placement may begin to matter even for frontier models. The "lost in the middle" effect — where LLMs deprioritize content that appears far from the beginning or end of the context window — could cause system prompt instructions to be deprioritized in later turns, while a user-message instruction near the end of the context remains salient. This is a documented effect in earlier models (Liu et al., 2023), though modern frontier models (especially those with million-token context windows) have improved significantly on long-context retrieval. Whether the effect is still detectable at scale is an open question this experiment does not answer.
+## Future Work
 
 ### Part 2 — Instruction conflict (hierarchy resolution)
 
