@@ -184,13 +184,23 @@ def build_summary(dataframe: pd.DataFrame) -> pd.DataFrame:
 # For rates: err_lo/hi are Wilson CI bounds.
 # For means: err_lo is SE column, err_hi is None (symmetric).
 CHART_METRICS: list[tuple[str, str, str | None, str, bool]] = [
-    ("completion_rate",    "completion_rate_lo",  "completion_rate_hi",  "Completion Rate",                   True),
-    ("compliance_rate",    "compliance_rate_lo",  "compliance_rate_hi",  "Compliance Rate",                   True),
-    ("mean_turns",         "se_turns",            None,                  "Mean Turns to Completion",          False),
-    ("mean_total_tokens",  "se_total_tokens",     None,                  "Mean Total Tokens",                 False),
-    ("mean_prefill_turn_1","se_prefill_turn_1",   None,                  "Prefill Turn 1 (ms) — Ollama only", False),
-    ("mean_prefill_subsequent","se_prefill_subsequent",None,             "Prefill Subsequent (ms) — Ollama only",False),
+    ("completion_rate",  "completion_rate_lo", "completion_rate_hi", "Completion Rate",          True),
+    ("compliance_rate",  "compliance_rate_lo", "compliance_rate_hi", "Compliance Rate",          True),
+    ("mean_turns",       "se_turns",           None,                 "Mean Turns to Completion", False),
 ]
+
+
+def _format_placement(name: str) -> str:
+    """Convert snake_case placement name to Title Case for display."""
+    return name.replace("_", " ").title()
+
+
+def _all_same_or_nan(values: list[float]) -> bool:
+    """Return True if all values are NaN or all identical — no useful variance."""
+    real_values = [v for v in values if not math.isnan(v)]
+    if not real_values:
+        return True
+    return max(real_values) - min(real_values) < 1e-9
 
 
 def _bar_positions(n_providers: int, n_placements: int, provider_idx: int) -> list[float]:
@@ -201,27 +211,60 @@ def _bar_positions(n_providers: int, n_placements: int, provider_idx: int) -> li
 
 
 def save_chart(summary: pd.DataFrame) -> None:
-    """Generate a 2×3 grid of bar charts and save to CHART_PATH.
+    """Generate bar charts for metrics with meaningful variance and save to CHART_PATH.
+
+    Automatically skips subplots where all values are identical (e.g. 100% completion
+    rate, 1 turn per run) or all NaN (e.g. prefill_subsequent when every run is 1 turn).
+    Annotates each bar with its value and uses Title Case placement labels.
 
     Args:
         summary: Summary DataFrame from build_summary().
     """
     providers = sorted(summary["provider"].unique().tolist())
-    placements_order = summary["placement"].unique().tolist()
+    placements_order = sorted(summary["placement"].unique().tolist())
+    placement_labels = [_format_placement(p) for p in placements_order]
     multi_provider = len(providers) > 1
 
-    fig, axes = plt.subplots(2, 3, figsize=(15, 9))
-    flat_axes = axes.flatten()
+    # Keep only metrics that have at least some variance across placements
+    meaningful_metrics: list[tuple[str, str, str | None, str, bool]] = []
+    for metric_tuple in CHART_METRICS:
+        metric, _err_lo, _err_hi, _title, _is_rate = metric_tuple
+        collected_values: list[float] = []
+        for provider in providers:
+            is_prefill = "prefill" in metric
+            if is_prefill and provider != "ollama":
+                continue
+            provider_rows = summary[summary["provider"] == provider]
+            for placement in placements_order:
+                row = provider_rows[provider_rows["placement"] == placement]
+                if not row.empty:
+                    collected_values.append(float(row[metric].values[0]))
+        if not _all_same_or_nan(collected_values):
+            meaningful_metrics.append(metric_tuple)
 
-    for ax_idx, (metric, err_lo_col, err_hi_col, title, is_rate) in enumerate(CHART_METRICS):
+    if not meaningful_metrics:
+        logger.warning("No metrics with meaningful variance — skipping chart.")
+        return
+
+    n_charts = len(meaningful_metrics)
+    n_cols = min(n_charts, 3)
+    n_rows = math.ceil(n_charts / n_cols)
+
+    fig, raw_axes = plt.subplots(n_rows, n_cols, figsize=(5 * n_cols, 5 * n_rows), squeeze=False)
+    flat_axes = raw_axes.flatten()
+
+    for ax_idx, (metric, err_lo_col, err_hi_col, title, is_rate) in enumerate(meaningful_metrics):
         ax = flat_axes[ax_idx]
-        ax.set_title(title, fontsize=10)
+        ax.set_title(title, fontsize=11, fontweight="bold", pad=10)
         ax.set_xticks(range(len(placements_order)))
-        ax.set_xticklabels(placements_order, rotation=15, ha="right", fontsize=9)
+        ax.set_xticklabels(placement_labels, fontsize=10)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
 
-        # Prefill metrics are Ollama-only — even when both providers are present
         is_prefill = "prefill" in metric
         providers_for_chart = [pv for pv in providers if not is_prefill or pv == "ollama"]
+
+        all_bar_tops: list[float] = []  # track max bar+err to set y-limit
 
         for provider_idx, provider in enumerate(providers_for_chart):
             provider_rows = summary[summary["provider"] == provider]
@@ -251,22 +294,51 @@ def save_chart(summary: pd.DataFrame) -> None:
                     err_above.append(err_sym)
 
             x_pos = _bar_positions(len(providers_for_chart), len(placements_order), provider_idx)
-            ax.bar(
+            bars = ax.bar(
                 x_pos,
                 values,
                 width=0.7 / max(len(providers_for_chart), 1),
                 label=provider,
                 yerr=[err_below, err_above],
                 capsize=4,
+                color=f"C{provider_idx}",
             )
+
+            # Annotate each bar with its value
+            for bar, val, ea in zip(bars, values, err_above):
+                label_text = f"{val:.0%}" if is_rate else f"{val:.0f}"
+                bar_top = bar.get_height() + ea
+                all_bar_tops.append(bar_top)
+                ax.text(
+                    bar.get_x() + bar.get_width() / 2,
+                    bar_top,
+                    label_text,
+                    ha="center", va="bottom", fontsize=9, fontweight="bold",
+                )
+
+        if is_rate:
+            # Give headroom for the % labels above the tallest bar+CI
+            ax.set_ylim(0, min(1.0, max(all_bar_tops, default=1.0) * 1.25))
+            ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: f"{y:.0%}"))
+        else:
+            ax.set_ylim(0, max(all_bar_tops, default=1.0) * 1.25)
 
         if multi_provider and len(providers_for_chart) > 1:
             ax.legend(fontsize=8)
 
-    fig.suptitle("Prompt Placement Experiment — Results", fontsize=13)
-    fig.tight_layout()
+    # Hide any unused subplot slots
+    for unused_ax in flat_axes[n_charts:]:
+        unused_ax.set_visible(False)
+
+    providers_str = " + ".join(p.title() for p in providers)
+    fig.suptitle(
+        f"Prompt Placement Experiment — Results\n"
+        f"Provider: {providers_str} | n=50 per placement",
+        fontsize=13, fontweight="bold",
+    )
+    fig.tight_layout(rect=[0, 0, 1, 0.93])
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    fig.savefig(CHART_PATH, dpi=150)
+    fig.savefig(CHART_PATH, dpi=150, bbox_inches="tight")
     plt.close(fig)
     logger.info("Chart saved to %s", CHART_PATH)
 
