@@ -148,12 +148,84 @@ The Wilson interval is used (rather than the simpler normal approximation) becau
 
 ## Results
 
-**Model:** `qwen2.5-coder:3b` via Ollama | **Runs:** 50 per placement (150 total)
-
+### qwen2.5-coder:3b via Ollama — 50 runs per placement
 
 **Key finding:** For `qwen2.5-coder:3b`, placing the instruction in the **user message** is dramatically more effective than the system prompt or tool description. The gap between user (64%) and system (8%) is large enough that the Wilson 95% CI intervals do not overlap — this is a statistically real difference, not noise.
 
-![Compliance rate chart](assets/ollama-qwen2.5-coder-3b/chart.png)
+![Compliance rate chart — Qwen 3B](assets/ollama-qwen2.5-coder-3b/chart.png)
 
-**Raw data:** `assets/ollama-qwen2.5-coder-3b/runs.csv` · regenerate with `python -m prompt_placement_anatomy.analyze`.
+**Raw data:** `assets/ollama-qwen2.5-coder-3b/runs.csv`
 
+---
+
+### claude-sonnet-4-6 via Anthropic API — 20 runs per placement
+
+**Key finding:** Claude Sonnet 4.6 is completely placement-insensitive — 100% compliance across all three slots. The model follows the `[DONE]` instruction regardless of whether it is in the system prompt, user message, or tool description. Unlike Qwen 3B, Claude actually invoked the tools correctly (mean 3 turns per run), so all three placements were read.
+
+| Placement | Compliance Rate | Mean Turns |
+|---|---|---|
+| System | 100% | 3 |
+| User | 100% | 3 |
+| Tool Description | 100% | 3 |
+
+**Raw data:** `assets/anthropic-claude-sonnet-4-6/runs.csv`
+
+> No chart generated — all metrics are identical across placements (100% compliance, 3 turns). A flat chart carries no information.
+
+---
+
+### claude-haiku-4-5 via Anthropic API — 50 runs per placement
+
+**Key finding:** Claude Haiku 4.5 — Anthropic's smallest, cheapest model — is also completely placement-insensitive. 100% compliance across all three slots, 3 turns per run, identical to Sonnet 4.6.
+
+| Placement | Compliance Rate | Mean Turns |
+|---|---|---|
+| System | 100% | 3 |
+| User | 100% | 3 |
+| Tool Description | 100% | 3 |
+
+**Raw data:** `assets/anthropic-claude-haiku-4-5/runs.csv`
+
+> No chart generated — all metrics are identical across placements (100% compliance, 3 turns). A flat chart carries no information.
+
+---
+
+### Summary across all models
+
+| Model | Type | System | User | Tool Description |
+|---|---|---|---|---|
+| `qwen2.5-coder:3b` | Small local (Ollama) | 8% | **64%** | 2% |
+| `claude-haiku-4-5` | Small frontier (Anthropic) | 100% | 100% | 100% |
+| `claude-sonnet-4-6` | Large frontier (Anthropic) | 100% | 100% | 100% |
+
+**The headline finding:** Placement sensitivity is a small-model problem. Both Anthropic models — including the cheapest, fastest Haiku — are completely robust to instruction placement. For `qwen2.5-coder:3b`, only the user message slot reliably delivers instructions to the model.
+
+---
+
+## Limitations & Future Work
+
+### Hypothesis: large-context behaviour may differ
+
+This experiment used short prompts (~300 tokens for Ollama, ~6,000 tokens for Claude including tool calls). Under these conditions, frontier models showed zero placement sensitivity.
+
+**Hypothesis:** at very large context lengths (50,000+ tokens — injected codebase, long conversation history, large tool schemas), placement may begin to matter even for frontier models. The "lost in the middle" effect — where LLMs deprioritize content that appears far from the beginning or end of the context window — could cause system prompt instructions to be deprioritized in later turns, while a user-message instruction near the end of the context remains salient. This is a documented effect in earlier models (Liu et al., 2023), though modern frontier models (especially those with million-token context windows) have improved significantly on long-context retrieval. Whether the effect is still detectable at scale is an open question this experiment does not answer.
+
+### Part 2 — Instruction conflict (hierarchy resolution)
+
+This experiment measures **placement strength** in isolation: one instruction, one slot, no competing signals.
+
+A natural follow-up is to measure **hierarchy resolution**: what happens when placements *conflict*?
+
+**Example setup:**
+- System prompt says: append `[DONE]`
+- User message says: append `[FINISHED]`
+- Tool description says: append `[COMPLETE]`
+
+Then observe which marker appears in the model's final answer — and which slots the model ignores when forced to choose.
+
+This would reveal the *priority ordering* of slots, not just whether they are read. The questions become:
+- Does the system prompt "win" over the user message for frontier models?
+- Does a small model even notice the conflict, or does it just follow whichever slot it was already attending to?
+- Does the ordering differ between Ollama and Claude?
+
+This would make for a compelling Part 2 — and the infrastructure built here (agent loop, runner, analyzer) is already reusable.
