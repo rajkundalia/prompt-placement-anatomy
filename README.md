@@ -150,14 +150,10 @@ The Wilson interval is used (rather than the simpler normal approximation) becau
 
 **Model:** `qwen2.5-coder:3b` via Ollama | **Runs:** 50 per placement (150 total)
 
-| Placement | Compliance Rate |
-|---|---|
-| User | **64%** |
-| System | 8% |
-| Tool Description | 2% |
 
 **Key finding:** For `qwen2.5-coder:3b`, placing the instruction in the **user message** is dramatically more effective than the system prompt or tool description. The gap between user (64%) and system (8%) is large enough that the Wilson 95% CI intervals do not overlap — this is a statistically real difference, not noise.
 
-**Assets (committed):** `assets/ollama-qwen2.5-coder-3b/chart.png` · `assets/ollama-qwen2.5-coder-3b/runs.csv`
-Regenerate anytime with `python -m prompt_placement_anatomy.analyze`.
+![Compliance rate chart](assets/ollama-qwen2.5-coder-3b/chart.png)
+
+**Raw data:** `assets/ollama-qwen2.5-coder-3b/runs.csv` · regenerate with `python -m prompt_placement_anatomy.analyze`.
 
