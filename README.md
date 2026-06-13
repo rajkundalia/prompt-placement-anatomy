@@ -110,7 +110,20 @@ prompt-placement-anatomy/
 
 ---
 
+## Metrics Explained
+
+**Compliance Rate** — the fraction of successful runs where the model's final answer contained `[DONE]`. This is the primary metric of the experiment.
+
+**Completion Rate** — the fraction of runs that produced a final text response within the turn cap (15 turns). A run that loops indefinitely on tool calls counts as a timeout. In this experiment, all runs completed, so this metric is 100% across the board.
+
+
+
+
+
+---
+
 ## Statistics Explanation
+
 
 The compliance and completion rates in the chart include **Wilson 95% Confidence Interval** error bars.
 
@@ -135,4 +148,12 @@ The Wilson interval is used (rather than the simpler normal approximation) becau
 
 ## Results
 
-*To be filled in after running the experiment.*
+**Model:** `qwen2.5-coder:3b` via Ollama | **Runs:** 50 per placement (150 total)
+
+
+**Key finding:** For `qwen2.5-coder:3b`, placing the instruction in the **user message** is dramatically more effective than the system prompt or tool description. The gap between user (64%) and system (8%) is large enough that the Wilson 95% CI intervals do not overlap — this is a statistically real difference, not noise.
+
+![Compliance rate chart](assets/ollama-qwen2.5-coder-3b/chart.png)
+
+**Raw data:** `assets/ollama-qwen2.5-coder-3b/runs.csv` · regenerate with `python -m prompt_placement_anatomy.analyze`.
+
