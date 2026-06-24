@@ -61,13 +61,16 @@ prompt-placement-anatomy/
 │       ├── runs.csv
 │       └── chart.png
 ├── assets/
-│   └── phase2/                      # Populated after experiments complete
+│   └── phase2/                      # Populated manually after each model's experiment completes
 │       ├── ollama-qwen2.5-coder-3b/
-│       │   └── runs.csv
+│       │   ├── runs.csv
+│       │   └── chart.png
 │       ├── anthropic-claude-haiku-4-5/
-│       │   └── runs.csv
+│       │   ├── runs.csv
+│       │   └── chart.png
 │       └── anthropic-claude-sonnet-4-6/
-│           └── runs.csv
+│           ├── runs.csv
+│           └── chart.png
 ├── project-generation-prompts/
 │   ├── complete-prompt-in-one-go.md     # Phase 1 (existing, do not touch)
 │   └── phase2-complete-prompt.md        # This file
@@ -278,6 +281,36 @@ Handle zero-success groups gracefully — report `"N/A"` instead of crashing on 
 ```bash
 python -m prompt_placement_anatomy.phase2.analyze_phase2
 ```
+
+---
+
+## Saving Results to Assets
+
+The `results/phase2/` directory is ephemeral — it accumulates runs for the active model and is cleared between models. The `assets/phase2/` directory is permanent — it archives each model's completed data for the README and blog post. This mirrors the Phase 1 workflow exactly.
+
+### Workflow (repeat for each model)
+
+1. **Run the experiment** for the current provider:
+   ```bash
+   python -m prompt_placement_anatomy.phase2.runner_phase2
+   ```
+2. **Analyse** to generate the chart:
+   ```bash
+   python -m prompt_placement_anatomy.phase2.analyze_phase2
+   ```
+3. **Copy results to assets** (replace `<provider-model>` with e.g. `ollama-qwen2.5-coder-3b`):
+   ```powershell
+   # PowerShell
+   New-Item -ItemType Directory -Force assets/phase2/<provider-model>
+   Copy-Item results/phase2/runs.csv  assets/phase2/<provider-model>/runs.csv
+   Copy-Item results/phase2/chart.png assets/phase2/<provider-model>/chart.png
+   ```
+4. **Clear `results/phase2/runs.csv`** before starting the next model's run:
+   ```powershell
+   Remove-Item results/phase2/runs.csv
+   ```
+
+> **Why clear between models?** Each model runs in isolation (one provider at a time, selected by `LLM_PROVIDER`). Clearing prevents a new model's 30 runs from being mixed into a previous model's CSV. The archived copy in `assets/phase2/` is the permanent record.
 
 ---
 
