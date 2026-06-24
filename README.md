@@ -1,3 +1,12 @@
+## Experiment Series
+
+| Phase | What it measures | README |
+|---|---|---|
+| **Phase 1 — Placement Strength** | How instruction placement across slots affects compliance in isolation | *(this file)* |
+| **Phase 2 — Hierarchy Resolution** | Which slot wins when all three conflict simultaneously | [README-phase2.md](README-phase2.md) |
+
+---
+
 # Prompt Placement Anatomy — Placement Experiment
 
 This project runs a controlled experiment measuring how placing the same instruction in different **prompt slots** — system message, user message, and tool description — affects an LLM agent's behaviour in an agentic tool-use loop. The instruction under test is `"End your final answer with the marker [DONE]"`, and the agent's task is to count TODO markers across five markdown files using filesystem tools. We measure **compliance rate** (did the model follow the instruction?), **completion rate** (did it finish within the turn cap?), **turns to completion**, and **total token usage** — giving a quantitative signal on which structural slot carries the most instructional weight for a given model.
