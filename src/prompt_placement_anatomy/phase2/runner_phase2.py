@@ -42,7 +42,8 @@ logger = logging.getLogger(__name__)
 RESULTS_DIR = Path("results") / "phase2"
 CSV_PATH = RESULTS_DIR / "runs.csv"
 
-RUNS = 30
+OLLAMA_RUNS = 50
+ANTHROPIC_RUNS = 30
 
 CSV_COLUMNS = [
     "provider",
@@ -232,7 +233,9 @@ def run_experiment(smoke_test: bool = False) -> None:
     Args:
         smoke_test: If True, run only 1 trial.
     """
-    total_runs = 1 if smoke_test else RUNS
+    total_runs = 1 if smoke_test else (
+        OLLAMA_RUNS if config.LLM_PROVIDER == "ollama" else ANTHROPIC_RUNS
+    )
 
     preflight_checks()
 

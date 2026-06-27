@@ -15,7 +15,7 @@ python -m prompt_placement_anatomy.generate_data
 # 2. Smoke-test Phase 2 (1 run — validates the full pipeline)
 python -m prompt_placement_anatomy.phase2.runner_phase2 --smoke-test
 
-# 3. Full experiment (30 runs)
+# 3. Full experiment (50 runs)
 python -m prompt_placement_anatomy.phase2.runner_phase2
 
 # 4. Analyse results and generate the chart
@@ -31,12 +31,14 @@ Results are written to `results/phase2/runs.csv` and the chart to `results/phase
 ```bash
 # Set LLM_PROVIDER=anthropic and ANTHROPIC_API_KEY in .env, then:
 
-# 30 runs (conflict condition)
+# 50 runs (conflict condition)
 python -m prompt_placement_anatomy.phase2.runner_phase2
 
 # Analyse — shows both providers side by side if both CSVs are present
 python -m prompt_placement_anatomy.phase2.analyze_phase2
 ```
+
+> **Note:** Anthropic runs 30 trials (Ollama runs 50). Claude is highly consistent so 30 is sufficient to confirm a dominant winner.
 
 ---
 
@@ -162,6 +164,6 @@ The Wilson interval is preferred over the normal approximation because it stays 
 
 **The three markers are not interchangeable tokens.** `[DONE]`, `[FINISHED]`, and `[COMPLETE]` differ in length and may differ in how often they appeared in the model's training data. A model might favour one marker not because its slot wins, but because that word is simply easier to generate. This is noted but not controlled for (controlling for it would require rotating which marker goes in which slot across runs, tripling the complexity — not done here).
 
-**30 runs per model** is sufficient to identify a dominant winner (e.g. 90% system) but may not resolve close splits (e.g. 40/40/20). A close split would require more runs to separate with confidence.
+**50 runs for Ollama, 30 for Anthropic.** 50 runs is the per-condition sample size from Phase 1. Anthropic models are highly consistent (100% compliance across all Phase 1 placements), so 30 runs is sufficient to identify a dominant winner. Both counts may not resolve genuinely close splits (e.g. 40/40/20) — that would require more runs.
 
 **Results are model-specific and task-specific.** Priority ordering observed for `qwen2.5-coder:3b` may not transfer to other architectures or tasks. Frontier models may exhibit different ordering than open-weight models.
