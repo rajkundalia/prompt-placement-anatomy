@@ -159,9 +159,9 @@ The Wilson interval is used (rather than the simpler normal approximation) becau
 
 **Key finding:** For `qwen2.5-coder:3b`, placing the instruction in the **user message** is dramatically more effective than the system prompt or tool description. The gap between user (64%) and system (8%) is large enough that the Wilson 95% CI intervals do not overlap — this is a statistically real difference, not noise.
 
-![Compliance rate chart — Qwen 3B](assets/ollama-qwen2.5-coder-3b/chart.png)
+![Compliance rate chart — Qwen 3B](assets/phase1/ollama-qwen2.5-coder-3b/chart.png)
 
-**Raw data:** `assets/ollama-qwen2.5-coder-3b/runs.csv`
+**Raw data:** `assets/phase1/ollama-qwen2.5-coder-3b/runs.csv`
 
 ---
 
@@ -175,7 +175,7 @@ The Wilson interval is used (rather than the simpler normal approximation) becau
 | User | 100% | 3 |
 | Tool Description | 100% | 3 |
 
-**Raw data:** `assets/anthropic-claude-sonnet-4-6/runs.csv`
+**Raw data:** `assets/phase1/anthropic-claude-sonnet-4-6/runs.csv`
 
 > No chart generated — all metrics are identical across placements (100% compliance, 3 turns). A flat chart carries no information.
 
@@ -191,7 +191,7 @@ The Wilson interval is used (rather than the simpler normal approximation) becau
 | User | 100% | 3 |
 | Tool Description | 100% | 3 |
 
-**Raw data:** `assets/anthropic-claude-haiku-4-5/runs.csv`
+**Raw data:** `assets/phase1/anthropic-claude-haiku-4-5/runs.csv`
 
 > No chart generated — all metrics are identical across placements (100% compliance, 3 turns). A flat chart carries no information.
 
