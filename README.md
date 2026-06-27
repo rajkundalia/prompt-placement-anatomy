@@ -102,6 +102,8 @@ prompt-placement-anatomy/
 │   ├── analyze.py         # Reads CSV, prints table, saves chart
 │   └── generate_data.py   # Generates 5 sample markdown files
 ├── data/sample_files/     # Created by generate_data
+├── assets/
+│   └── phase1/            # Archived Phase 1 results
 └── results/               # Created at runtime
     ├── runs.csv
     └── chart.png
