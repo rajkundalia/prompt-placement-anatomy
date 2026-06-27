@@ -210,23 +210,11 @@ The Wilson interval is used (rather than the simpler normal approximation) becau
 ---
 
 ## Future Work
-
 ### Part 2 — Instruction conflict (hierarchy resolution)
+*Update: Phase 2 is now complete! Check out the results in [README-phase2.md](README-phase2.md).*
 
 This experiment measures **placement strength** in isolation: one instruction, one slot, no competing signals.
 
-A natural follow-up is to measure **hierarchy resolution**: what happens when placements *conflict*?
-
-**Example setup:**
-- System prompt says: append `[DONE]`
-- User message says: append `[FINISHED]`
-- Tool description says: append `[COMPLETE]`
-
-Then observe which marker appears in the model's final answer — and which slots the model ignores when forced to choose.
-
-This would reveal the *priority ordering* of slots, not just whether they are read. The questions become:
-- Does the system prompt "win" over the user message for frontier models?
-- Does a small model even notice the conflict, or does it just follow whichever slot it was already attending to?
-- Does the ordering differ between Ollama and Claude?
-
-This would make for a compelling Part 2 — and the infrastructure built here (agent loop, runner, analyzer) is already reusable.
+Phase 2 measures **hierarchy resolution**: what happens when placements *conflict*?
+For example, if the System prompt, User message, and Tool description all carry conflicting instructions, which one wins?
+The results reveal the *priority ordering* of slots, not just whether they are read.

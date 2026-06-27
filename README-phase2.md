@@ -148,13 +148,18 @@ The Wilson interval is preferred over the normal approximation because it stays 
 
 ## Results
 
-> **To be filled after running the experiment.**
-
 | Model | system [DONE] | user [FINISHED] | tool [COMPLETE] | none | conflict-in-output |
 |---|---|---|---|---|---|
-| `qwen2.5-coder:3b` (Ollama) | — | — | — | — | — |
-| `claude-haiku-4-5` (Anthropic) | — | — | — | — | — |
-| `claude-sonnet-4-6` (Anthropic) | — | — | — | — | — |
+| `qwen2.5-coder:3b` (Ollama) | 2% | 60% | 0% | 32% | 6% |
+| `claude-haiku-4-5` (Anthropic) | 0% | 100% | 0% | 0% | 0% |
+| `claude-sonnet-4-6` (Anthropic) | N/A | N/A | N/A | N/A | N/A |
+
+**Key Findings:**
+- **Qwen 3B** is highly confused by conflicting instructions. It ignores them all 32% of the time, and when it does follow one, it heavily biases toward the user prompt (60%). The system prompt has virtually zero authority (2%) when competing with the user prompt.
+- **Claude Haiku 4.5** behaves completely differently. It consistently resolves the hierarchy by strictly prioritizing the user prompt (100%), entirely ignoring the system and tool instructions in the conflict condition.
+
+![Phase 2 Chart - Qwen 3B](assets/phase2/ollama-qwen2.5-coder-3b/chart.png)
+*(Chart generated for Qwen 3B. Anthropic chart is not shown as it is 100% user prompt.)*
 
 ---
 
